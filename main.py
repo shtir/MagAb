@@ -28,6 +28,7 @@ class getdata:
         c.host(address)
         c.port(port)
         c.unit_id(slaveID)
+        c.timeout(2)
         c.open()
 
         data = c.read_holding_registers(100, 22)
@@ -41,19 +42,23 @@ class getdata:
 
 MagAB = getdata(ipAddress, port, slaveID)
 
-measurement_name = dbname
-body = [
-    {
-        "measurement": measurement_name,
-        "time": time,
-        "fields": {
-            "Flow": MagAB.flow,
-            "Total": MagAB.total,
+#print(info.dbname)
+#print(MagAB.flow)
+#print(MagAB.total)
+if (MagAB):
+    measurement_name = dbname
+    body = [
+        {
+            "measurement": measurement_name,
+            "time": time,
+            "fields": {
+                "Flow": MagAB.flow,
+                "Total": MagAB.total,
+            }
         }
-    }
-]
-#print(body)
+    ]
+    #print(body)
 
 
-ifclient = InfluxDBClient(ifhost, ifport, ifuser, ifpass, ifdb)
-ifclient.write_points(body)
+    ifclient = InfluxDBClient(ifhost, ifport, ifuser, ifpass, ifdb)
+    ifclient.write_points(body)
